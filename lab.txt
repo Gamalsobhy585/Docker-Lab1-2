@@ -1,0 +1,62 @@
+1-Need to setup a CMS using wordpress. The wordpress needs a database, webserver with php support. 
+The IT manager asked to isolate every thing, 
+so that setup database on a separate container,
+ and the wordpress on another separate container.
+	1-Create a mysql container and create the database
+	2-Create a wordpress container, and connect it to the database created in the database container
+	
+2-Need to setup a full ERP system using odoo, odoo needs a postgres database running. you asked to setup 
+	1-A container for Postgres
+	2-A Container for odoo
+	
+Solution : 
+
+docker-compose up -d
+
+
+version: '3'
+
+services:
+  mysql:
+    image: mysql:latest
+    container_name: mysql_container
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: 
+      MYSQL_DATABASE: wordpress_db
+      MYSQL_USER: Gamal@
+      MYSQL_PASSWORD: 
+
+  wordpress:
+    image: wordpress:latest
+    container_name: wordpress_container
+    restart: always
+    ports:
+      - "8080:80"
+    environment:
+      WORDPRESS_DB_HOST: mysql:3306
+      WORDPRESS_DB_NAME: wordpress_db
+      WORDPRESS_DB_USER: wordpress_user
+      WORDPRESS_DB_PASSWORD: wordpress_password
+
+  postgres:
+    image: postgres:latest
+    container_name: postgres_container
+    restart: always
+    environment:
+      POSTGRES_USER: odoo_user
+      POSTGRES_PASSWORD: odoo_password
+      POSTGRES_DB: odoo_db
+
+  odoo:
+    image: odoo:latest
+    container_name: odoo_container
+    restart: always
+    ports:
+      - "8069:8069"
+    environment:
+      POSTGRES_USER: odoo_user
+      POSTGRES_PASSWORD: odoo_password
+      POSTGRES_DB: odoo_db
+      PGHOST: postgres
+      PGPORT: 5432
